@@ -29,7 +29,7 @@ RUN cd /data/TicketGenerator && \
     cd /data/TicketGenerator && \
     javac -cp /data/TicketGenerator/jarFiles/*: /data/TicketGenerator/com/ibm/mq/badge/*.java;
 # Switch to the MQ image
-FROM ibmcom/mq:latest
+FROM ibmcom/mq:9.1.1.0
 USER root
 # Copy over config and scripts
 COPY ./startApp.sh /data/startApp.sh
