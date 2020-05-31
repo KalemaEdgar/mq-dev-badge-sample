@@ -29,7 +29,7 @@ RUN cd /data/TicketGenerator && \
     cd /data/TicketGenerator && \
     javac -cp /data/TicketGenerator/jarFiles/*: /data/TicketGenerator/com/ibm/mq/badge/*.java;
 # Switch to the MQ image
-FROM ibmcom/mq:latest
+FROM ibmcom/mq:9.1.1.0
 USER root
 # Copy over config and scripts
 COPY ./startApp.sh /data/startApp.sh
@@ -37,9 +37,9 @@ COPY ./20-config.mqsc /etc/mqm/20-config.mqsc
 # Copy over compiled classes from previous stage
 COPY --from=0 /data/TicketGenerator /data/TicketGenerator
 # Fix permissions for compiled classes
-RUN chmod 776 -R /data/TicketGenerator
+RUN chmod 777 -R /data/TicketGenerator
 RUN echo app:passw0rd | chpasswd
 RUN chmod a+x /data/startApp.sh
-USER mqm
+USER root
 # Run MQ and execute TicketGenerator
 ENTRYPOINT [ "/data/startApp.sh" ]

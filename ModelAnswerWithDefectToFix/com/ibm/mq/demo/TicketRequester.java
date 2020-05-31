@@ -41,8 +41,8 @@ public class TicketRequester
     // session needs to be a static else createTextMessage generates a
     // compilation error
     private static Session session = null;
-    private static String PURCHASE_QUEUE = "purchase_queue";
-    private static String CONFIRMATION_QUEUE = "confirmation_queue";
+    private static String PURCHASE_QUEUE = "purchase";
+    private static String CONFIRMATION_QUEUE = "confirmation";
     private static String ACCEPTED = "Accepted";
 
     /**
@@ -129,7 +129,7 @@ public class TicketRequester
         logger.warning("Error connecting to confirmation queue");
         e.printStackTrace();
       }
-      
+
       return success;
     }
 
