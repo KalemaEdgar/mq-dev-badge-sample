@@ -28,8 +28,7 @@ import com.ibm.msg.client.jms.JmsFactoryFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 
 /**
-  A <code>SessionBuilder</code> is used to establish and close a
-  connection to a MQ Server.
+  A <code>SessionBuilder</code> is used to establish and close a connection to a MQ Server.
  */
 public class SessionBuilder
 {
@@ -44,6 +43,8 @@ public class SessionBuilder
   private static String USER = "app";
   private static String PASSWORD = "passw0rd";
   private static String SUBSCRIPTION_NAME = "SampleSubscriber";
+
+  private static Boolean TRANSACTED = false;
 
   /**
    * Uses the JMS Client classes to establish a connection to the Queue Manager
@@ -60,13 +61,13 @@ public class SessionBuilder
     Session session = null;
     logger.fine("Initialising JMS session connection");
 
-    //try {
+    try {
       // Create a connection factory
       logger.finest("Creating Connection Factory");
-      String host = getSystemEnvString("MQ_BADGE_QM_HOSTNAME", HOST);;
+      String host = getSystemEnvString("MQ_BADGE_QM_HOSTNAME", HOST);
       int port = PORT;
-      String qmgr = getSystemEnvString("MQ_BADGE_QM_NAME", QMGR);;
-      String user = getSystemEnvString("MQ_BADGE_USER", USER);;
+      String qmgr = getSystemEnvString("MQ_BADGE_QM_NAME", QMGR);
+      String user = getSystemEnvString("MQ_BADGE_USER", USER);
       String password = getSystemEnvString("MQ_BADGE_PASSWORD", PASSWORD);
       String channel = getSystemEnvString("MQ_BADGE_CHANNEL", CHANNEL);
 
@@ -82,25 +83,48 @@ public class SessionBuilder
       System.out.println("Challenge : Subscribes to topic");
       System.out.println("Your code to create a subscription will go here");
       // The following code needs to be added here
+      // Create a Factory that is required to create a connection.
       logger.finest("Challenge Add code to : Get an instance of JMS Factory factory");
+      JmsFactoryFactory ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER);
+      logger.fine("Factory factory created " + ff);
+
+      // Create a Connection factory - Edgar
       logger.finest("Challenge Add code to : Get an instance of JMS Connection factory");
+      JmsConnectionFactory cf = ff.createConnectionFactory();
+      logger.fine("Connection factory created " + cf);
 
       // Set the properties
+      // Create JMS objects that will map to MQ objects - Edgar
       logger.finest("Challenge Add code to : Set WMQ_ properties for Connection");
+      cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, HOST);
+      cf.setIntProperty(WMQConstants.WMQ_PORT, PORT);
+      cf.setStringProperty(WMQConstants.WMQ_CHANNEL, CHANNEL);
+      cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
+      cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, QMGR);
+      cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "MQ Dev Badge Sample App");
+      cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true);
+      cf.setStringProperty(WMQConstants.USERID, USER);
+      cf.setStringProperty(WMQConstants.PASSWORD, PASSWORD);
 
-      // Create JMS objects
+      // Create a connection - Edgar
       logger.finest("Creating Connection Session");
       logger.finest("Challenge Add code to : Create the Connection");
+      Connection connection = cf.createConnection();
+      logger.fine("Connection created " + connection);
+
+      // Create a session - Edgar
       logger.finest("Challenge Add code to : Create the Session");
+      session = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+      logger.fine("Session created " + session);
+
       logger.finest("Challenge Add code to : Start the Connection");
+      connection.start();
+      logger.fine("JMS session connection started and initialised successfully");
 
-
-      logger.fine("JMS session connection initialised successfully");
-    //}
-    //catch (JMSException jmsex) {
-    //  logger.severe("Unable to create JMS Connection");
-    //  jmsex.printStackTrace();
-    //}
+    } catch (JMSException jmsex) {
+      logger.severe("Unable to create JMS Connection");
+      jmsex.printStackTrace();
+    }
 
     return session;
   }

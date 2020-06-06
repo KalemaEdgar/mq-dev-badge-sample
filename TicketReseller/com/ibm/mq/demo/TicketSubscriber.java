@@ -1,17 +1,17 @@
 /*
-* (c) Copyright IBM Corporation 2018
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+  * (c) Copyright IBM Corporation 2018
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
 */
 
 package com.ibm.mq.demo;
@@ -50,21 +50,30 @@ public class TicketSubscriber
       */
 
     public TicketSubscriber(Session session, String destinationName) {
-      logger.fine("Building Message Consumer");
-      System.out.println("Challenge : Subscribes to topic");
-      System.out.println("Your code to create a subscription will go here");
+      try {
 
-      //try {
         // Create the Topic and Subscription to it.
-        // The following code needs to be added here
-        logger.finest("Challenge Add code to : Create a topic");
-        logger.finest("Challenge Add code to : Create a Consumer, save in class variable subscriber");
+        logger.fine("Building Message Consumer");
 
-        logger.fine("Subscription to ticket queue established");
-      //} catch (JMSException e) {
-      //  logger.severe("Unable to establish subscription to ticket queue");
-      //  e.printStackTrace();
-      //}
+        // Subscribe to a topic - Edgar
+        logger.finest("Challenge Add code to : Create a topic");
+        logger.fine("Creating topic from session. Topic is an instance of Destination");
+        Destination topic = session.createTopic(destinationName);
+        logger.fine("Topic created " + topic);
+
+        // Building the message consumer to the above topic - Edgar
+        System.out.println("Challenge : Subscribes to topic");
+        logger.fine("Creating subscription to the earlier created topic.");
+        logger.finest("Challenge Add code to : Create a Consumer, save in class variable subscriber");
+        subscriber = session.createConsumer(topic);
+        this.session = session;
+        logger.fine("Subscription created " + subscriber);
+        logger.fine("Subscription to topic " + destinationName + " established");
+
+      } catch (JMSException e) {
+        logger.severe("Unable to establish subscription to ticket queue or topic");
+        e.printStackTrace();
+      }
     }
 
     /**

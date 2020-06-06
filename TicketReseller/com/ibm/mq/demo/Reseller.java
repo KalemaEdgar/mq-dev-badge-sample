@@ -1,17 +1,17 @@
-/*
-* (c) Copyright IBM Corporation 2018
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+  * (c) Copyright IBM Corporation 2018
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
 */
 
 package com.ibm.mq.demo;
@@ -40,22 +40,20 @@ public class Reseller
     logger.info("Reseller Application is starting");
 
     // Challenge : Connect to a queue manager
-    // The JMS Code to subscribe to a topic will be
-    // in SessionBuilder.java
+    // The JMS Code to subscribe to a topic will be in SessionBuilder.java
     Session session = SessionBuilder.connect();
+    logger.info("Reseller Session initialised " + session);
 
     if (session != null) {
       // Challenge : Subscribes to topic
-      // The JMS Code to subscribe to a topic will be
-      // in TicketSubscriber.java
+      // The JMS Code to subscribe to a topic will be in TicketSubscriber.java
       TicketSubscriber ticketSubscriber = new TicketSubscriber(session, DESTINATION_NAME);
       TicketRequester ticketRequester = new TicketRequester(session);
       if (ticketSubscriber.isGood()) {
         logger.fine("Entering wait loop for event tickets");
         while(true) {
           // Challenge : Receives a publication
-          // The JMS Code to receive a publication will be
-          // in TicketSubscriber.java
+          // The JMS Code to receive a publication will be in TicketSubscriber.java
           try {
             Message message = ticketSubscriber.waitForPublish();
             if (message != null) {
@@ -66,16 +64,13 @@ public class Reseller
 
               logger.fine("Sending request to purchase tickets over peer to peer");
 
-              // Challenge : Receiving a publication triggers a put
-              // then requests to purchase a batch of tickets
-              // The JMS Code to put a message onto the purchase queue will be
-              // in TicketRequester.java
+              // Challenge : Receiving a publication triggers a put then requests to purchase a batch of tickets
+              // The JMS Code to put a message onto the purchase queue will be in TicketRequester.java
               String correlationID = ticketRequester.put(message, numToReserve);
               if (correlationID != null) {
                 logger.fine("Request has been sent, waiting response from Event Booking System");
                 // Challenge : Our reseller application does a get from this queue
-                // The JMS Code to get a message from the confirmation queue will be in
-                // TicketRequester.java
+                // The JMS Code to get a message from the confirmation queue will be in TicketRequester.java
                 if (ticketRequester.get(correlationID)) {
                   logger.info("Tickets secured!");
                 } else {
