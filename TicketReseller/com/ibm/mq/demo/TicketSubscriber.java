@@ -106,6 +106,10 @@ public class TicketSubscriber
         System.out.println("Your code to receive a message will go here");
         // The following code needs to be added here
         logger.finest("Challenge Add code to : Receive a message from the MessageConsumer");
+        logger.finest("Receiving message from the MessageConsumer");
+
+        message = subscriber.receive();
+        logger.finest("Message received " + message);
 
         if (message != null)
         {
@@ -118,10 +122,10 @@ public class TicketSubscriber
         concurrentErrorCounter = 0;
 
         // Once you have your message you can delete this line
-        System.out.println("You can remove this thrown exception when you have your message code");
-        throw new PublishWaitException("Temp Exit from an endless loop in shell code");
-      }
-      catch (JMSException e) {
+        // System.out.println("You can remove this thrown exception when you have your message code");
+        // throw new PublishWaitException("Temp Exit from an endless loop in shell code");
+
+      } catch (JMSException e) {
         logger.warning("Error waiting for ticket message to be published");
         e.printStackTrace();
         if (3 > concurrentErrorCounter++) {
